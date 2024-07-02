@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audio Transcription</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Record Audio for Transcription</h1>
+        <div class="buttons">
+            <button id="record-button">Start Recording</button>
+            <button id="stop-button" disabled>Stop Recording</button>
+        </div>
+        <h2>Transcription</h2>
+        <div id="transcription-result"></div>
+    </div>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+
+        document.getElementById('record-button').addEventListener('click', async function() {
+            audioChunks = [];
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+            
+            mediaRecorder.start();
+            document.getElementById('record-button').disabled = true;
+            document.getElementById('stop-button').disabled = false;
+        });
+
+        document.getElementById('stop-button').addEventListener('click', async function() {
+            mediaRecorder.stop();
+
+            mediaRecorder.onstop = async function() {
+                document.getElementById('record-button').disabled = false;
+                document.getElementById('stop-button').disabled = true;
+                
+                const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                const formData = new FormData();
+                formData.append('file', blob, 'recording.webm');
+                
+                const response = await fetch('/transcribe/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                const resultElement = document.getElementById('transcription-result');
+
+                if (response.ok) {
+                    resultElement.innerHTML += `<div class="transcription-segment">${result.transcription}</div><hr>`;
+                } else {
+                    resultElement.innerHTML += `<div class="transcription-segment">Error: ${result.error}</div><hr>`;
+                }
+            };
+        });
+    </script>
+</body>
+</html>
