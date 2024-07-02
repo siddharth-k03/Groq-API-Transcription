@@ -5,7 +5,7 @@ This is a simple web application that allows users to record audio through their
 ## Features
 
 - Record audio through the browser.
-- Transcribe recorded audio using Groq API.
+- Transcribe recorded audio using Whisper V3 via Groq API.
 - Display transcription results on the page.
 - Maintain a history of transcriptions without overwriting.
 
