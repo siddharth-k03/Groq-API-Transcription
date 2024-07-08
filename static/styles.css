@@ -58,6 +58,16 @@ button:hover:enabled {
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.transcription-segment p {
+    margin: 5px 0;
+}
+
+.transcription-segment .sentiment {
+    color: #007BFF;
+    font-weight: bold;
 }
 
 hr {

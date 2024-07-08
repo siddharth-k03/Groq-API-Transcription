@@ -53,9 +53,18 @@
                 const resultElement = document.getElementById('transcription-result');
 
                 if (response.ok) {
-                    resultElement.innerHTML += `<div class="transcription-segment">${result.transcription}</div><hr>`;
+                    resultElement.innerHTML += `
+                        <div class="transcription-segment">
+                            <p>${result.transcription}</p>
+                            <p class="sentiment">Sentiment: ${result.sentiment}</p>
+                        </div>
+                        <hr>`;
                 } else {
-                    resultElement.innerHTML += `<div class="transcription-segment">Error: ${result.error}</div><hr>`;
+                    resultElement.innerHTML += `
+                        <div class="transcription-segment">
+                            <p>Error: ${result.error}</p>
+                        </div>
+                        <hr>`;
                 }
             };
         });

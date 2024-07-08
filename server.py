@@ -5,12 +5,16 @@ from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydub import AudioSegment
+from groq import Groq
 import aiohttp
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+
+# Initialize the Groq client
+client = Groq(api_key=os.getenv("LLAMA_API_KEY"))
 
 # Function to convert the sample rate to 16000 Hz if needed
 def convert_sample_rate(audio_bytes):
@@ -19,11 +23,11 @@ def convert_sample_rate(audio_bytes):
         audio = audio.set_frame_rate(16000)
     return audio
 
-# Asynchronous function to transcribe audio using Groq API
+# Asynchronous function to transcribe audio using Whisper
 async def transcribe_audio(audio_bytes):
     url = "https://api.groq.com/openai/v1/audio/transcriptions"
     headers = {
-        "Authorization": f"Bearer {os.getenv('GROQ_API_KEY')}",
+        "Authorization": f"Bearer {os.getenv('WHISPER_API_KEY')}",
     }
     form_data = aiohttp.FormData()
     form_data.add_field('model', 'whisper-large-v3')
@@ -41,6 +45,19 @@ async def transcribe_audio(audio_bytes):
                                     detail=await response.text())
             return await response.json()
 
+# Function to perform sentiment analysis using Llama
+def analyze_sentiment(text):
+    chat_completion = client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": f"Perform sentiment analysis on the following text: {text}",
+            }
+        ],
+        model="llama3-8b-8192",
+    )
+    return chat_completion.choices[0].message.content
+
 # Endpoint to handle audio file uploads and transcription
 @app.post("/transcribe/")
 async def transcribe_audio_file(file: UploadFile = File(...)):
@@ -55,11 +72,14 @@ async def transcribe_audio_file(file: UploadFile = File(...)):
 
         transcription = await transcribe_audio(buffer)
         transcribed_text = transcription.get('text', 'Transcription failed')
-        segments = transcription.get('segments', [])
+
+        # Perform sentiment analysis
+        sentiment_result = analyze_sentiment(transcribed_text)
 
         return JSONResponse(content={
             "transcription": transcribed_text,
-            "segments": segments
+            "segments": transcription.get('segments', []),
+            "sentiment": sentiment_result
         },
                             status_code=200)
     except Exception as e:
