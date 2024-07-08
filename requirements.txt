@@ -3,3 +3,5 @@ uvicorn
 pydub
 aiohttp
 python-multipart
+groq
+aiohttp
