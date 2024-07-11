@@ -45,12 +45,15 @@ This is a simple web application that allows users to record audio through their
 
 ### Running the Application
 
-1. **Start the FastAPI Server**:
+1. **Replace <voice-id> in `server.py`**:
+You can find an appropriate voice and its respective voice-id from the ElevenLabs website (https://elevenlabs.io/docs/api-reference/get-voices).
+
+2. **Start the FastAPI Server**:
     ```sh
     python server.py
     ```
 
-2. **Open your Browser**:
+3. **Open your Browser**:
     - Navigate to `http://localhost:8000` to access the application.
 
 ### Usage
