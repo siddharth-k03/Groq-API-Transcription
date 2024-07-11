@@ -4,3 +4,4 @@ pydub
 aiohttp
 python-multipart
 groq
+elevenlabs

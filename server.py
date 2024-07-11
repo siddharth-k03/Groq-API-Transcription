@@ -1,5 +1,6 @@
 import os
 import io
+import requests
 from fastapi import FastAPI, File, UploadFile, HTTPException, Request
 from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -58,6 +59,26 @@ def analyze_sentiment(text):
     )
     return chat_completion.choices[0].message.content
 
+# Function to convert text to speech using ElevenLabs API
+def text_to_speech(text):
+    url = "https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM"
+    headers = {
+        "Accept": "audio/mpeg",
+        "Content-Type": "application/json",
+        "xi-api-key": os.getenv("ELEVENLABS_API_KEY")
+    }
+    data = {
+        "text": text,
+        "model_id": "eleven_monolingual_v1",
+        "voice_settings": {
+            "stability": 0.5,
+            "similarity_boost": 0.5
+        }
+    }
+    response = requests.post(url, json=data, headers=headers)
+    response.raise_for_status()
+    return response.content
+
 # Endpoint to handle audio file uploads and transcription
 @app.post("/transcribe/")
 async def transcribe_audio_file(file: UploadFile = File(...)):
@@ -76,10 +97,19 @@ async def transcribe_audio_file(file: UploadFile = File(...)):
         # Perform sentiment analysis
         sentiment_result = analyze_sentiment(transcribed_text)
 
+        # Generate text-to-speech audio
+        tts_audio = text_to_speech(transcribed_text)
+
+        # Save the audio file to a temporary location
+        audio_path = "static/output.mp3"
+        with open(audio_path, 'wb') as f:
+            f.write(tts_audio)
+
         return JSONResponse(content={
             "transcription": transcribed_text,
             "segments": transcription.get('segments', []),
-            "sentiment": sentiment_result
+            "sentiment": sentiment_result,
+            "audio_url": f"/static/output.mp3"
         },
                             status_code=200)
     except Exception as e:

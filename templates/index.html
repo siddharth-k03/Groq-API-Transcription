@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Audio Transcription</title>
+    <title>Audio Transcription and Sentiment Analysis</title>
     <link rel="stylesheet" type="text/css" href="/static/styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Record Audio for Transcription</h1>
+        <h1>Record Audio for Transcription and Sentiment Analysis</h1>
         <div class="buttons">
             <button id="record-button">Start Recording</button>
             <button id="stop-button" disabled>Stop Recording</button>
         </div>
         <h2>Transcription</h2>
         <div id="transcription-result"></div>
+        <h2>Sentiment Analysis</h2>
+        <div id="sentiment-result"></div>
+        <h2>Text-to-Speech Audio</h2>
+        <audio id="tts-audio" controls></audio>
     </div>
 
     <script>
@@ -50,21 +54,17 @@
                 });
 
                 const result = await response.json();
-                const resultElement = document.getElementById('transcription-result');
+                const transcriptionElement = document.getElementById('transcription-result');
+                const sentimentElement = document.getElementById('sentiment-result');
+                const audioElement = document.getElementById('tts-audio');
 
                 if (response.ok) {
-                    resultElement.innerHTML += `
-                        <div class="transcription-segment">
-                            <p>${result.transcription}</p>
-                            <p class="sentiment">Sentiment: ${result.sentiment}</p>
-                        </div>
-                        <hr>`;
+                    transcriptionElement.innerHTML += `<div class="transcription-segment">${result.transcription}</div><hr>`;
+                    sentimentElement.innerHTML += `<div class="sentiment-segment">${result.sentiment}</div><hr>`;
+                    audioElement.src = result.audio_url;
+                    audioElement.load();
                 } else {
-                    resultElement.innerHTML += `
-                        <div class="transcription-segment">
-                            <p>Error: ${result.error}</p>
-                        </div>
-                        <hr>`;
+                    transcriptionElement.innerHTML += `<div class="transcription-segment">Error: ${result.error}</div><hr>`;
                 }
             };
         });

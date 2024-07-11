@@ -1,12 +1,14 @@
 # Audio Transcription and Sentiment Analysis App
 
-This is a simple web application that allows users to record audio through their microphone and transcribe the audio using the Groq API with the Whisper model. Additionally, the application performs sentiment analysis on the transcription using the Groq API with the Llama3 model. The transcription and sentiment analysis results are displayed on the page.
+This is a simple web application that allows users to record audio through their microphone and transcribe the audio using the Groq API with the Whisper model. Additionally, the application performs sentiment analysis on the transcription using the Groq API with the Llama3 model. The transcribed text is then converted to speech using the ElevenLabs API, and the audio is played in the user's browser. The transcription, sentiment analysis results, and the audio are displayed on the page.
 
 ## Features
 
 - Record audio through the browser.
 - Transcribe recorded audio using the Groq API.
 - Perform sentiment analysis on the transcribed text using the Groq API.
+- Convert the transcribed text to speech using the ElevenLabs API.
+- Play the generated audio in the user's browser.
 - Display transcription and sentiment analysis results on the page.
 - Maintain a history of transcriptions and sentiment analyses.
 
@@ -16,6 +18,7 @@ This is a simple web application that allows users to record audio through their
 - Pydub
 - aiohttp
 - Groq API (Whisper Large V3 and Llama 8b 8192)
+- ElevenLabs API
 - HTML/CSS/JavaScript
 
 ## Getting Started
@@ -25,6 +28,7 @@ This is a simple web application that allows users to record audio through their
 - Python 3.7+
 - Pip (Python package installer)
 - Groq API Keys for Whisper and Llama separately
+- ElevenLabs API Key
 
 ### Installation
 
@@ -55,8 +59,10 @@ This is a simple web application that allows users to record audio through their
 2. Click on "Stop Recording" to stop recording. The transcription will be processed and displayed below.
 3. Each transcription result is appended, separated by a line.
 4. Sentiment analysis of the transcription will be performed and displayed along with the transcription result.
+5. The transcribed text will be converted to speech, and the generated audio will be played in the browser.
 
 ### Branches
 
 - **main**: Contains the original transcription functionality.
 - **sentiment-analysis**: Contains the updated code with added sentiment analysis functionality.
+- **text-to-speech**: Contains the updated code with added sentiment analysis and text to speech functionalities.
